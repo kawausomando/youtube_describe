@@ -8,7 +8,10 @@
     "summarize": "tsx summarizeTranscription.ts",
     "ask": "tsx askQuestionTranscription.ts",
     "setup": "npm ci && pip install -r requirements.txt && npm run install-ffmpeg",
-    "install-ffmpeg": "node scripts/install-ffmpeg.js"
+    "install-ffmpeg": "node scripts/install-ffmpeg.js",
+    "dev": "next dev",
+    "build": "next build",
+    "start:web": "next start"
   },
   "author": "",
   "license": "ISC",
@@ -17,12 +20,21 @@
     "node": "22.14.0"
   },
   "dependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "autoprefixer": "^10.4.20",
+    "dotenv": "^16.4.5",
+    "next": "^14.1.0",
     "openai": "^4.85.2",
+    "postcss": "^8.5.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^4.0.7",
     "tsx": "^4.19.3",
-    "youtube-dl-exec": "^2.5.8",
-    "dotenv": "^16.4.5"
+    "youtube-dl-exec": "^2.5.8"
   },
   "devDependencies": {
-    "@types/node": "^22.13.4"
+    "@types/node": "^22.13.4",
+    "typescript": "5.7.3"
   }
 }
