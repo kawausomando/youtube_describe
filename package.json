@@ -1,0 +1,28 @@
+{
+  "name": "youtube_describe",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm ci && tsx index.ts",
+    "summarize": "tsx summarizeTranscription.ts",
+    "ask": "tsx askQuestionTranscription.ts",
+    "setup": "npm ci && pip install -r requirements.txt && npm run install-ffmpeg",
+    "install-ffmpeg": "node scripts/install-ffmpeg.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "engines": {
+    "node": "22.14.0"
+  },
+  "dependencies": {
+    "openai": "^4.85.2",
+    "tsx": "^4.19.3",
+    "youtube-dl-exec": "^2.5.8",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4"
+  }
+}
