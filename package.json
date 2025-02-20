@@ -5,8 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm ci && npm run dev",
-    "summarize": "tsx summarizeTranscription.ts",
-    "ask": "tsx askQuestionTranscription.ts",
+    "summarize": "tsx scripts/summarizeTranscription.ts",
+    "ask": "tsx scripts/askQuestionTranscription.ts",
     "setup": "npm ci && pip install -r requirements.txt && npm run install-ffmpeg && shx test -f .env || shx cp .env.example .env",
     "install-ffmpeg": "node scripts/install-ffmpeg.js",
     "dev": "next dev",

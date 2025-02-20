@@ -23,6 +23,10 @@ export default function Home() {
         const data = await response.json();
         throw new Error(data.error || '処理に失敗しました');
       }
+
+      // レスポンスからtranscriptionを取得してローカルストレージに保存
+      const data = await response.json();
+      localStorage.setItem('transcription', data.transcription);
       
       router.push('/result');
     } catch (error) {

@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import youtubeDl from 'youtube-dl-exec';
 import { spawn } from 'child_process';
 import path from 'path';
+import fs from 'fs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -9,25 +10,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { url } = req.body;
-  const tmpDir = path.join(process.cwd(), 'tmp');
   
   try {
+    // 一時ディレクトリの作成（存在しなければ）
+    const tmpDir = path.join(process.cwd(), 'tmp');
+    if (!fs.existsSync(tmpDir)) {
+      fs.mkdirSync(tmpDir, { recursive: true });
+    }
+
     const audioFile = path.join(tmpDir, 'audio.mp3');
+    // audio.mp3 が既に存在している場合は削除して上書き保存できるようにする
+    if (fs.existsSync(audioFile)) {
+      fs.unlinkSync(audioFile);
+    }
     
-    // ダウンロード開始
+    // youtube-dl を使って、指定した URL の動画から音声ファイルをダウンロード
     await youtubeDl(url, {
       extractAudio: true,
       audioFormat: 'mp3',
       output: audioFile
     });
 
-    // 文字起こし処理
+    // Python の文字起こしスクリプト（whisper_transcribe.py）を実行
     const pythonProcess = spawn('python', ['whisper_transcribe.py', audioFile]);
     
     let transcriptionError = '';
+    let transcriptionOutput = '';
     
+    // stderr の情報をキャプチャ
     pythonProcess.stderr.on('data', (data) => {
       transcriptionError += data.toString();
+    });
+
+    // stdout から文字起こし結果を受け取る
+    pythonProcess.stdout.on('data', (data) => {
+      transcriptionOutput += data.toString();
     });
 
     await new Promise((resolve, reject) => {
@@ -40,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     });
 
-    res.status(200).json({ success: true });
+    res.status(200).json({ transcription: transcriptionOutput });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ 

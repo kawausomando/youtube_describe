@@ -1,41 +1,40 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
-import fs from 'fs';
-import path from 'path';
 
+// OpenAI API の設定（環境変数から API キーを取得）
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') {
+  if(req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-
+  
+  const { transcription } = req.body;
+  if (!transcription) {
+    return res.status(400).json({ error: 'リクエストボディに transcription を含めてください。' });
+  }
+  
   try {
-    const transcriptionPath = path.join(process.cwd(), 'tmp', 'transcription.txt');
-    
-    if (!fs.existsSync(transcriptionPath)) {
-      return res.status(404).json({ error: '文字起こしファイルが見つかりません' });
-    }
-
-    const transcription = fs.readFileSync(transcriptionPath, 'utf8');
-    
+    // OpenAI の ChatCompletion API にリクエストして、日本語訳と要約を生成
     const response = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL ?? 'gpt-3.5-turbo',
       messages: [
         {
           role: 'system',
-          content: '以下の文章をまず全文日本語に翻訳し全文出力してください、その翻訳文を元に簡潔な要約も作成してください。回答では、「日本語訳」と「要約」を明確に分けて出力してください。「要約」は箇条書きしてください'
+          content: '以下の文章をまず日本語に翻訳し、その翻訳結果をもとに簡潔な要約を作成してください。' +
+                   '回答では「日本語訳」と「要約」を明確に分けて出力してください。'
         },
         { role: 'user', content: transcription }
       ],
       temperature: 0.7
     });
 
-    res.status(200).json({ summary: response.choices[0].message.content });
+    const output = response.choices[0].message.content;
+    res.status(200).json({ summary: output });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: '要約の生成に失敗しました' });
+    console.error('Error in summarize API:', error);
+    res.status(500).json({ error: error instanceof Error ? error.message : 'エラーが発生しました' });
   }
 } 
