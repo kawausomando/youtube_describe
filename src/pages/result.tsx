@@ -51,7 +51,7 @@ export default function Result() {
       ) : (
         <div className="bg-white shadow rounded-lg p-6">
           <pre className="whitespace-pre-line font-sans text-gray-800">
-            {summary.replace("。", "。\n")}
+            {summary.replaceAll("。", "。\n")}
           </pre>
         </div>
       )}

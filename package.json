@@ -4,20 +4,21 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm ci && tsx index.ts",
+    "start": "npm ci && npm run dev",
     "summarize": "tsx summarizeTranscription.ts",
     "ask": "tsx askQuestionTranscription.ts",
-    "setup": "npm ci && pip install -r requirements.txt && npm run install-ffmpeg",
+    "setup": "npm ci && pip install -r requirements.txt && npm run install-ffmpeg && shx test -f .env || shx cp .env.example .env",
     "install-ffmpeg": "node scripts/install-ffmpeg.js",
     "dev": "next dev",
     "build": "next build",
-    "start:web": "next start"
+    "start:web": "next start",
+    "vercel-build": "npm run build"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "engines": {
-    "node": "22.14.0"
+    "node": ">=18.x"
   },
   "dependencies": {
     "@types/react": "^19.0.10",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.13.4",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "shx": "^0.3.3"
   }
 }
